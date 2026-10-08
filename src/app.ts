@@ -18,7 +18,7 @@ app.use(
 );
 
 app.use(express.json());
-ompatibility;
+// Serve Swagger UI with CDN assets for serverless environment compatibility
 app.use(
   "/docs",
   swaggerUi.serve,
