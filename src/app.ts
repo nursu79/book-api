@@ -7,7 +7,20 @@ import { swaggerSpec } from "./config/swagger.js";
 
 const app = express();
 
-app.use(helmet());
+// Configure Helmet with specific Content Security Policy (CSP) directives for Swagger UI CDN assets
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+        imgSrc: ["'self'", "data:", "https://validator.swagger.io"],
+      },
+    },
+  }),
+);
+
 app.use(
   cors({
     origin: "*",
@@ -21,7 +34,7 @@ app.use(express.json());
 // Expose OpenAPI JSON specification
 app.get("/docs-json", (_req, res) => {
   res.setHeader("Content-Type", "application/json");
-  res.send(swaggerSpec);
+  res.status(200).json(swaggerSpec);
 });
 
 // Serverless-compatible HTML endpoint for Swagger UI using CDN assets
@@ -64,7 +77,7 @@ const swaggerHtml = `<!DOCTYPE html>
 
 app.get(["/docs", "/api/docs"], (_req, res) => {
   res.setHeader("Content-Type", "text/html");
-  res.send(swaggerHtml);
+  res.status(200).send(swaggerHtml);
 });
 
 app.use("/api/books", bookRouter);
