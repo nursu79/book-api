@@ -1,5 +1,4 @@
 import swaggerJSDoc from "swagger-jsdoc";
-import { config } from "./env.js";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -15,8 +14,8 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: `http://localhost:${config.port}`,
-        description: "Development Server",
+        url: "/",
+        description: "Current Server (Relative Path)",
       },
     ],
     components: {
@@ -58,8 +57,122 @@ const options: swaggerJSDoc.Options = {
         },
       },
     },
+    paths: {
+      "/api/books": {
+        get: {
+          summary: "Fetch all books with filtering & pagination",
+          tags: ["Books"],
+          parameters: [
+            { in: "query", name: "category", schema: { type: "string" } },
+            { in: "query", name: "author", schema: { type: "string" } },
+            {
+              in: "query",
+              name: "page",
+              schema: { type: "integer", default: 1 },
+            },
+            {
+              in: "query",
+              name: "limit",
+              schema: { type: "integer", default: 10 },
+            },
+          ],
+          responses: {
+            "200": { description: "List of books retrieved successfully" },
+          },
+        },
+        post: {
+          summary: "Create a new book",
+          tags: ["Books"],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["title", "author", "publicationYear", "price"],
+                  properties: {
+                    title: { type: "string", example: "Clean Code" },
+                    author: { type: "string", example: "Robert C. Martin" },
+                    publicationYear: { type: "number", example: 2008 },
+                    price: { type: "number", example: 32.0 },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            "201": { description: "Book created successfully" },
+            "400": { description: "Validation Error" },
+          },
+        },
+      },
+      "/api/books/{id}": {
+        get: {
+          summary: "Get book by ID",
+          tags: ["Books"],
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            "200": { description: "Book found" },
+            "404": { description: "Book not found" },
+          },
+        },
+        patch: {
+          summary: "Update book by ID",
+          tags: ["Books"],
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    price: { type: "number", example: 39.99 },
+                    stock: { type: "number", example: 25 },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            "200": { description: "Book updated successfully" },
+            "404": { description: "Book not found" },
+          },
+        },
+        delete: {
+          summary: "Delete book by ID",
+          tags: ["Books"],
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            "200": { description: "Book deleted successfully" },
+            "404": { description: "Book not found" },
+          },
+        },
+      },
+    },
   },
-  apis: ["./src/routes/*.ts", "./dist/routes/*.js"], // Path to files containing OpenAPI annotations
+  apis: [],
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
