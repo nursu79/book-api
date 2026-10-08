@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  # Service 1: Express Book API Container
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: book_api_app
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/book-api-docker
+      - NODE_ENV=production
+    depends_on:
+      - mongo
+    restart: always
+
+  # Service 2: Local Zero-Latency MongoDB Container
+  mongo:
+    image: mongo:7.0
+    container_name: book_api_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:
