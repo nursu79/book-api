@@ -6,9 +6,7 @@ module.exports = {
   moduleNameMapper: {
     '^(\\..*)\\.js$': '$1',
   },
-  diagnostics: {
-    ignoreCodes: [151002],
-  },
 };
+
 
 
